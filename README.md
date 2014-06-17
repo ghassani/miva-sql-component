@@ -20,10 +20,11 @@ After you execute the query, the same array passed as a parameter gets the follo
 
 For Example:
 
+```
 <mvt:assign name="l.settings:query:query" value="'SELCT * FROM table WHERE field = ?'" />
 <mvt:assign name="l.settings:query:bind_parametetrs[0]" value="'bar'" />
 <mvt:item name="sql" param="l.settings:query" />
 
 <mvt:foreach iterator="row" array="query:results">
-	<!-- &mvt:row; -->
 </mvt:foreach>
+```
