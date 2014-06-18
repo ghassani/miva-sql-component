@@ -16,7 +16,7 @@ After you execute the query, the same array passed as a parameter gets the follo
 
 - array:results - Int|Array - This will be populated with rows from SELECT or EXPLAIN, or INT from UPDATE, INSERT, DELETE, etc
 - array:fields - Array|null - This will be populated with an array of fields from SELECT or EXPLAIN, or NULL from UPDATE, INSERT, DELETE, etc
-- array:query_type - String - This will be populated with the type of query being executed (SELECT, EXPLAIN, or NULL from UPDATE, INSERT, DELETE, etc)
+- array:query_type - String - This will be populated with the type of query being executed (SELECT, EXPLAIN, etc)
 
 For Example:
 
