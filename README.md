@@ -28,3 +28,7 @@ For Example:
 <mvt:foreach iterator="row" array="query:results">
 </mvt:foreach>
 ```
+SQL Query Console
+-------------------
+
+When installed into a store, you can now execute any SQL query from the Miva Merchant Admin and display the results. The utility is under the Utilities menu in the admin.
