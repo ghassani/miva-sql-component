@@ -1,34 +1,20 @@
-<MIVA STANDARDOUTPUTLEVEL="" IDENT="$Id: sql-queries.mv 20 2014-07-17 11:41:00Z gidriss $">
+<MIVA STANDARDOUTPUTLEVEL="" IDENT="$Id: sql-queries.mv 20 2014-12-04 04:20:00Z gidriss $">
 
 <MvCOMMENT>
-	SQL Queries
+    This file is part of Spliced MvDO Component.
 
-	This utility component allows you to execute SQL queries from Miva Script Templates.
+    SQL Query Component is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-	To use this you must enable it in your store and create an item for it under pages.
-	You will also need to assign it to any page you wish to use its functionality on.
+    SQL Query is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-	When you call the component, the param passed to the item must be a literal string to
-	a global or local array containing the following members:
-
-	- array:query - String - This holds the actual query to be executed. You can use ? for placeholders
-	- array:bind_paramters - Array - This should be an array for placeholders set in your query with ?
-
-	After you execute the query, the same array passed as a parameter gets the following members:
-
-	- array:results - Int|Array - This will be populated with rows from SELECT or EXPLAIN, or INT from UPDATE, INSERT, DELETE, etc
-	- array:fields - Array|null - This will be populated with an array of fields from SELECT or EXPLAIN, or NULL from UPDATE, INSERT, DELETE, etc
-	- array:query_type - String - This will be populated with the type of query being executed (SELECT, EXPLAIN, or NULL from UPDATE, INSERT, DELETE, etc)
-
-	For Example:
-
-	<mvt:assign name="l.settings:query:query" value="'SELCT * FROM table WHERE field = ?'" />
-	<mvt:assign name="l.settings:query:bind_parametetrs[0]" value="'bar'" />
-	<mvt:item name="sql" param="l.settings:query" />
-
-	<mvt:foreach iterator="row" array="query:results">
-		<!-- &mvt:row; -->
-	</mvt:foreach>
+    You should have received a copy of the GNU General Public License
+    along with SQL Query Component.  If not, see <http://www.gnu.org/licenses/>.
 
 </MvCOMMENT>
 
@@ -36,18 +22,18 @@
 	<MvASSIGN NAME="l.module:code"		VALUE="spliced-sql">
 	<MvASSIGN NAME="l.module:name"		VALUE="SQL Queries">
 	<MvASSIGN NAME="l.module:provider"	VALUE="Spliced Media">
-	<MvASSIGN NAME="l.module:author"	VALUE="Ghassan Idriss">
-	<MvASSIGN NAME="l.module:version"	VALUE="0.2000">
+	<MvASSIGN NAME="l.module:author"	VALUE="Gassan Idriss">
+	<MvASSIGN NAME="l.module:version"	VALUE="0.5">
 	<MvASSIGN NAME="l.module:api_ver"	VALUE="5.60">
 	<MvASSIGN NAME="l.module:features"	VALUE="util, vis_util, component, data_store, vis_store">
 </MvFUNCTION>
 
 <MvFUNCTION NAME="Module_Install_Store" PARAMETERS="module var" STANDARDOUTPUTLEVEL="" ERROROUTPUTLEVEL="">
-	<MvFUNCTIONRETURN VALUE=1>
-</MvFUNCTION>
+    <MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_Item( 'mvdo',  l.module:code ) }">
+        <MvFUNCTIONRETURN VALUE = 0>
+    </MvIF>
 
-<MvFUNCTION NAME="Module_Upgrade_Store" PARAMETERS="module var, version" STANDARDOUTPUTLEVEL="" ERROROUTPUTLEVEL="">
-	<MvFUNCTIONRETURN VALUE=1>
+    <MvFUNCTIONRETURN VALUE=1>
 </MvFUNCTION>
 
 <MvFUNCTION NAME="Module_Uninstall_Store" PARAMETERS="module var" STANDARDOUTPUTLEVEL="" ERROROUTPUTLEVEL="">
@@ -58,10 +44,15 @@
 	<MvFUNCTIONRETURN VALUE=1>
 </MvFUNCTION>
 
-<MvFUNCTION NAME="Module_Store_Update" PARAMETERS="module var" STANDARDOUTPUTLEVEL="">
-	<MvFUNCTIONRETURN VALUE=1>
-</MvFUNCTION>
+<MvFUNCTION NAME="Module_Upgrade_Store" PARAMETERS="module var, version" STANDARDOUTPUTLEVEL="" ERROROUTPUTLEVEL="">
+    <MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].Item_Load_Code( 'mvdo', l.null ) }">
+        <MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_Item( 'mvdo',  l.module:code ) }">
+            <MvFUNCTIONRETURN VALUE = 0>
+        </MvIF>
+    </MvIF>
 
+    <MvFUNCTIONRETURN VALUE=1>
+</MvFUNCTION>
 
 <MvFUNCTION NAME="ComponentModule_Initialize" PARAMETERS="module var, item, all_settings var, settings var" STANDARDOUTPUTLEVEL="">
 	<MvFUNCTIONRETURN VALUE=1>
@@ -78,44 +69,6 @@
 	<MvREFERENCE NAME="l.parameters" VARIABLE="{ l.param }">
 
 	<MvFUNCTIONRETURN VALUE = "{ Execute_Query(l.parameters) }" />	
-</MvFUNCTION>
-
-<MvFUNCTION NAME="ComponentModule_Render_End" PARAMETERS="module var, item, all_settings var, settings var, param" STANDARDOUTPUTLEVEL="">
-</MvFUNCTION>
-
-<MvFUNCTION NAME="ComponentModule_Tabs" PARAMETERS="module var, item, settings var" STANDARDOUTPUTLEVEL="">
-	<MvFUNCTIONRETURN VALUE="">
-</MvFUNCTION>
-
-<MvFUNCTION NAME="ComponentModule_Validate" PARAMETERS="module var, item, field_prefix, fields var" STANDARDOUTPUTLEVEL="">
-	<MvFUNCTIONRETURN VALUE=1>
-</MvFUNCTION>
-
-<MvFUNCTION NAME="ComponentModule_Update" PARAMETERS="module var, item, field_prefix, fields var, settings var" STANDARDOUTPUTLEVEL="">
-	<MvFUNCTIONRETURN VALUE=1>
-</MvFUNCTION>
-
-<MvFUNCTION NAME="ComponentModule_Content" PARAMETERS="module var, item, tab, load_fields, field_prefix, fields var, settings var" STANDARDOUTPUTLEVEL="">
-</MvFUNCTION>
-
-<MvFUNCTION NAME="ComponentModule_Defaults" PARAMETERS="module var, settings var" STANDARDOUTPUTLEVEL="">
-</MvFUNCTION>
-
-<MvFUNCTION NAME="ComponentModule_Page_Assign" PARAMETERS="module var, page var, item, settings var" STANDARDOUTPUTLEVEL="">
-	<MvFUNCTIONRETURN VALUE=1>
-</MvFUNCTION>
-
-<MvFUNCTION NAME="ComponentModule_Page_Unassign" PARAMETERS="module var, page var, item, settings var" STANDARDOUTPUTLEVEL="">
-	<MvFUNCTIONRETURN VALUE=1>
-</MvFUNCTION>
-
-<MvFUNCTION NAME="Module_Store_Tabs" PARAMETERS="module var" STANDARDOUTPUTLEVEL="">
-	<MvFUNCTIONRETURN VALUE="">
-</MvFUNCTION>
-
-<MvFUNCTION NAME="Module_Store_Content" PARAMETERS="module var, tab, load_fields" STANDARDOUTPUTLEVEL="text, html, compresswhitespace">
-
-	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
 <MvFUNCTION NAME="Module_Utility_Tabs" PARAMETERS="module var" STANDARDOUTPUTLEVEL="">
@@ -135,9 +88,32 @@
 		<MvFUNCTIONRETURN VALUE = 1>
 	</MvIF>
 
-	<MvEVAL EXPR = "{ Render_About(module) }" />
+	
 
-	<a href="{ g.secure_adminurl $ 'Screen=SUTL&Module_Code=spliced-sql&Store_Code=' $ g.Store_Code }">Query Console</a>
+	<style>
+		.qc-btn{
+			background:#008cba; 
+			color: #fff; 
+			padding-top: 5px; 
+			padding-bottom: 5px; 
+			padding-left: 8px;
+			padding-right: 8px;
+			font-weight:bold;
+			text-decoration: none;
+
+		}
+		.qc-about-wrapper{
+			width: 80%;
+            margin: 0 auto;
+            font-size: 12pt;
+		}
+	</style>
+
+	<div class="qc-about-wrapper">
+		<MvEVAL EXPR = "{ Render_About(module) }" />
+		<a href="{ g.secure_adminurl $ 'Screen=SUTL&Module_Code=spliced-sql&Store_Code=' $ g.Store_Code }" class="qc-btn">Go To Query Console</a>
+	</div>
+
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
@@ -164,23 +140,54 @@
 		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 		<link href="//maxcdn.bootstrapcdn.com/bootswatch/3.2.0/yeti/bootstrap.min.css" rel="stylesheet">
 		<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css">
+		<style>
+			.copyright{
+				margn-top: 20px;
+			}
+		</style>
 	</head>
 	<body>
 		<div class="container-fluid">
-			<MvEVAL EXPR = "{ Render_Query_Form(module) }" />
+		<ul class="nav nav-tabs" role="tablist">
+		  <li class="active"><a href="#query-tab" role="tab" data-toggle="tab">Query</a></li>
+		  <li><a href="#about-tab" role="tab" data-toggle="tab">About</a></li>
+		</ul>
+
+		<!-- Tab panes -->
+		<div class="tab-content">
+		  <div class="tab-pane active" id="query-tab">
+		  	<MvEVAL EXPR = "{ Render_Query_Form(module) }" />
 
 			<MvIF EXPR = "{ NOT ISNULL g.query }">
 				<MvASSIGN NAME = "l.parameters:query" VALUE = "{ g.query }" />
 				<MvASSIGN NAME = "l.parameters:assign_error" VALUE = "1" />
-			
+				
+				<MvIFNDEF  NAME="DEV"> <MvCOMMENT>| We hide the error in production because we display the error ourselves if there is one.</MvCOMMENT>
+					<div style="display:none;">
+				</MvIFNDEF>
+
 				<MvASSIGN NAME = "l.result" VALUE = "{ Execute_Query(l.parameters) }" />
 
+				<MvIFNDEF  NAME="DEV">
+					</div>
+				</MvIFNDEF>
 				<MvEVAL EXPR = "{ Render_Query_Results(l.parameters) }" />
 			</MvIF>
+		  </div>
+		  <div class="tab-pane" id="about-tab">
+	        	<div class="row">
+	        		<div class="col-lg-6 col-md-6">					
+				        <MvEVAL EXPR = "{ Render_About(l.module) }" />
+					</div>
+					<div class="col-lg-6 col-md-6">
+						<a href="http://www.github.com/ghassani" class="btn btn-success" target="_blank"><i class="fa fa-github"></i>
+		                <a href="http://www.github.com/splicedmedia" class="btn btn-success" target="_blank"><i class="fa fa-github"></i></a>
+					</div>
+				</div>
+		  	</div>
+		</div>
 
-			<footer>
-				<MvEVAL EXPR = "{ Render_About(module) }" />
-			</footer>
+
 		</div>
 	</body>
 	<MvFUNCTIONRETURN VALUE = 1>
@@ -188,24 +195,81 @@
 
 
 <MvFUNCTION NAME = "Render_About" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
+	<style>
+        .spliced-sql-about-wrapper{
 
-		<div style="font-size: 10px; font-weight: bold;">Developed By Gassan Idriss - Version: <MvEVAL EXPR="{ l.module:version }" /></div>
-		<div style="font-size: 10px; font-weight: bold;">For updates, license, and m0ar code check out <a href="http://www.github.com/ghassani" target="_blank">http://www.github.com/ghassani</a></div>
+        }
+        .spliced-sql-about-wrapper code{
+            border-left: 3px solid #c1c1c1; 
+            padding-left: 5px;
+        }
+        .spliced-sql-about-wrapper em{
+            background: #F3F3F3;
+            padding: 1px;
+        }
+	</style>
+	<div class="spliced-sql-about-wrapper">
+		<h1>SQL Query Component</h1>
+
+	    <p>Version: <MvEVAL EXPR="{ l.module:version }" /></p>
+
+		<p>This utility component allows you to execute SQL queries from Miva Script Templates.</p>
+
+		<p>You will also need to assign it to any page you wish to use its functionality on.</p>
+
+		<p>When you call the component, the param passed to the item must be a literal string to
+		a global or local array containing the following members:</p>
+
+		
+		<div><code>- array:query - String - This holds the actual query to be executed. You can use ? for placeholders</code></div>
+		<div><code>- array:bind_paramters - Array - This should be an array for placeholders set in your query with ?</code></div>
+
+
+		<p>After you execute the query, the same array passed as a parameter gets the following members:</p>
+
+		<div><code>- array:results - Int|Array - This will be populated with rows from SELECT or EXPLAIN, or INT from UPDATE, INSERT, DELETE, etc</code></div>
+		<div><code>- array:fields - Array|null - This will be populated with an array of fields from SELECT or EXPLAIN, or NULL from UPDATE, INSERT, DELETE, etc</code></div>
+		<div><code>- array:query_type - String - This will be populated with the type of query being executed (SELECT, EXPLAIN, etc)</code></div>
+
+		<p>For Example:</p>
+
+		<div><code>&#x3C;mvt:assign name=&#x22;l.settings:query:query&#x22; value=&#x22;&#x27;SELECT * FROM s01_Products WHERE code = ?&#x27;&#x22; /&#x3E;</code></div>
+		<div><code>&#x3C;mvt:assign name=&#x22;l.settings:query:bind_parameters[1]&#x22; value=&#x22;&#x27;bar&#x27;&#x22; /&#x3E;</code></div>
+		<div><code>&#x3C;mvt:item name=&#x22;sql&#x22; param=&#x22;l.settings:query&#x22; /&#x3E;</code></div>
+		<div><code>&nbsp;</code></div>
+		<div><code>&#x3C;mvt:foreach iterator=&#x22;row&#x22; array=&#x22;query:results&#x22;&#x3E;</code></div>
+		<div><code>&nbsp;&nbsp;&#x26;mvte:row:name;</code></div>
+		<div><code>&#x3C;/mvt:foreach&#x3E;</code></div>
+
+	    <p>&copy; 2014 <a href="http://www.gassanidriss.com" target="_blank">Gassan Idriss</a> &amp; <a href="http://www.splicedmedia.com" target="_blank">Spliced Media L.L.C</a></p>
+
+	    <p>SQL Query Component is free software: you can redistribute it and/or modify
+	    it under the terms of the GNU General Public License as published by
+	    the Free Software Foundation, either version 3 of the License, or
+	    (at your option) any later version.</p>
+
+	    <p> You should have received a copy of the GNU General Public License
+	    along with SQL Query Component.  If not, see <<a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>>.
+
+	    <p>You can download source code, as well as get updated versions from the 
+	    <a href="https://github.com/ghassani/miva-sql-component" target="_blank">offical GitHub repository</a>.</p>
+	</div>
+
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Render_Query_Form" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
 	<MvASSIGN NAME = "l.base_link" VALUE = "{ g.secure_adminurl $ 'Screen=SUTL&Module_Code=spliced-sql&Store_Code=' $ g.Store_Code }" />
 
-	<div class="alert alert-warning">
+	<div class="alert alert-info alert-sm">
 		<i class="fa fa-warning"></i> This utility can break your store if you do not know what you are doing.
 	</div>
 	
-	<form method="post" action="{ l.base_link }" role="form">
+	<form method="post" action="{ l.base_link }" role="form" id="query-form">
 		<div class="row">
 			<div class="col-lg-12 col-md-12">
 				<div class="form-group">
 					<label for="query">Execute a Query</label>
-					<textarea name="query" class="form-control" placeholder="Supported Query Types: SELECT, INSERT, UPDATE, DELETE, EXPLAIN, ALTER TABLE, DROP TABLE" style=""><MvEVAL EXPR = "{ g.query }" /></textarea>
+					<textarea name="query" id="query-statement" class="form-control" placeholder="Supported Query Types: SELECT, INSERT, UPDATE, DELETE, EXPLAIN, SHOW, ALTER, DROP" style=""><MvEVAL EXPR = "{ g.query }" /></textarea>
 				</div>
 			</div>
 		</div>
@@ -215,6 +279,54 @@
 			</div>
 		</div>
 	</form>
+
+	<div class="modal fade" id="confirmQueryModal" tabindex="-1" role="dialog" aria-labelledby="confirmQueryLabel" aria-hidden="true">
+	    <div class="modal-dialog">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <button type="button" class="close" data-dismiss="modal">
+	                    <span aria-hidden="true">&times;</span>
+	                    <span class="sr-only">Close</span>
+	                </button>
+	                <h4 class="modal-title" id="confirmQueryLabel">Confirm</h4>
+	            </div>
+	            <div class="modal-body">
+	                <p>Your query can effect database records. Are you sure you wish to execute this query?</p>
+	            </div>
+	            <div class="modal-footer">
+	                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+	                <button type="button" class="btn btn-primary" id="execute-modal">Execute</button>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+
+
+	<script>
+		var $form = $('#query-form');
+		var $query = $('#query-statement');
+
+		$form.on('submit', function(e){
+			
+			var query = $query.val().toUpperCase();
+
+			if(!query.length){
+				return false;
+			}
+
+			if(query.indexOf('SELECT') > -1 || query.indexOf('EXPLAIN') > -1 || query.indexOf('SHOW') > -1){
+				return true;
+			}
+
+			var $modal = $("#confirmQueryModal").modal();
+
+			return false;
+		});
+
+		$("#execute-modal").on('click', function(e){
+			document.getElementById('query-form').submit();
+		});
+	</script>
 </MvFUNCTION>
 
 
@@ -224,7 +336,7 @@
 		<h2>Query Results <small><MvEVAL EXPR = "{ l.parameters:query_type }" /> QUERY</small></h2>
 	</div>
 
-	<MvIF EXPR = "{ l.parameters:query_type EQ 'SELECT' OR l.parameters:query_type EQ 'EXPLAIN' }">
+	<MvIF EXPR = "{ l.parameters:query_type EQ 'SELECT' OR l.parameters:query_type EQ 'EXPLAIN' OR l.parameters:query_type EQ 'SHOW' }">
 		<table width="100%" class="table table-hover table-striped table-condensed table-bordered">
 			<thead>
 				<tr>
@@ -246,13 +358,12 @@
 				<MvFOREACH ITERATOR = "l.result" ARRAY = "l.parameters:results" INDEX = "l.row_index">
 					<tr>
 						<MvFOREACH ITERATOR = "l.field" ARRAY = "l.parameters:fields" INDEX = "l.index">
-							<td><MvEVAL EXPR = "{ miva_variable_value('l.parameters:results[' $ l.row_index $ ']:' $ l.field:field_name ) }" /></td>
+							<td><MvEVAL EXPR = "{ encodeentities(miva_variable_value('l.parameters:results[' $ l.row_index $ ']:' $ l.field:field_name )) }" /></td>
 						</MvFOREACH>
 					</tr>
 				</MvFOREACH>
 			</tbody>
-		</table>
-	
+		</table>	
 	<MvELSE>
 		<table width="100%" class="table table-hover table-striped table-condensed table-bordered">
 			<tbody>
@@ -302,6 +413,10 @@
 
 	<MvELSEIF EXPR="{ indexofi('ALTER', l.parameters:query, 1) EQ 1 }">
 		<MvASSIGN NAME="l.parameters:query_type" VALUE="ALTER" />
+
+	<MvELSEIF EXPR="{ indexofi('SHOW', l.parameters:query, 1) EQ 1 }">
+		<MvASSIGN NAME="l.parameters:query_type" VALUE="SHOW" />
+
 	<MvELSE>
 		<MvASSIGN NAME="l.parameters:query_type" VALUE="OTHER" />
 	</MvIF>
@@ -323,7 +438,7 @@
 	</MvIF>
 
 	<MvCOMMENT>Execute the Query</MvCOMMENT>
-	<MvIF EXPR="{ l.parameters:query_type EQ 'SELECT' OR l.parameters:query_type EQ 'EXPLAIN' }">
+	<MvIF EXPR="{ l.parameters:query_type EQ 'SELECT' OR l.parameters:query_type EQ 'EXPLAIN' OR l.parameters:query_type EQ 'SHOW' }">
 		<MvOPENVIEW NAME= "Merchant" VIEW="SQL" QUERY="{ l.parameters:query }" FIELDS= "{ l.parameters:bind_parameter_list }">
 
 			<MvIF EXPR="{ g.MvOPENVIEW_Error }">
@@ -371,4 +486,43 @@
 			<MvASSIGN NAME="l.parameters:results" VALUE="1">
 		<MvCOMMIT NAME="Merchant">
 	</MvIF>
+</MvFUNCTION>
+
+
+<MvFUNCTION NAME="ComponentModule_Render_End" PARAMETERS="module var, item, all_settings var, settings var, param" STANDARDOUTPUTLEVEL="">
+</MvFUNCTION>
+
+<MvFUNCTION NAME="ComponentModule_Tabs" PARAMETERS="module var, item, settings var" STANDARDOUTPUTLEVEL="">
+	<MvFUNCTIONRETURN VALUE="">
+</MvFUNCTION>
+
+<MvFUNCTION NAME="ComponentModule_Validate" PARAMETERS="module var, item, field_prefix, fields var" STANDARDOUTPUTLEVEL="">
+	<MvFUNCTIONRETURN VALUE=1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME="ComponentModule_Update" PARAMETERS="module var, item, field_prefix, fields var, settings var" STANDARDOUTPUTLEVEL="">
+	<MvFUNCTIONRETURN VALUE=1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME="ComponentModule_Content" PARAMETERS="module var, item, tab, load_fields, field_prefix, fields var, settings var" STANDARDOUTPUTLEVEL="">
+</MvFUNCTION>
+
+<MvFUNCTION NAME="ComponentModule_Defaults" PARAMETERS="module var, settings var" STANDARDOUTPUTLEVEL="">
+</MvFUNCTION>
+
+<MvFUNCTION NAME="ComponentModule_Page_Assign" PARAMETERS="module var, page var, item, settings var" STANDARDOUTPUTLEVEL="">
+	<MvFUNCTIONRETURN VALUE=1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME="ComponentModule_Page_Unassign" PARAMETERS="module var, page var, item, settings var" STANDARDOUTPUTLEVEL="">
+	<MvFUNCTIONRETURN VALUE=1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME="Module_Store_Tabs" PARAMETERS="module var" STANDARDOUTPUTLEVEL="">
+	<MvFUNCTIONRETURN VALUE="">
+</MvFUNCTION>
+
+<MvFUNCTION NAME="Module_Store_Content" PARAMETERS="module var, tab, load_fields" STANDARDOUTPUTLEVEL="text, html, compresswhitespace">
+
+	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
