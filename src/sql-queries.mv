@@ -23,13 +23,13 @@
 	<MvASSIGN NAME="l.module:name"		VALUE="SQL Queries">
 	<MvASSIGN NAME="l.module:provider"	VALUE="Spliced Media">
 	<MvASSIGN NAME="l.module:author"	VALUE="Gassan Idriss">
-	<MvASSIGN NAME="l.module:version"	VALUE="0.5001">
+	<MvASSIGN NAME="l.module:version"	VALUE="0.5002">
 	<MvASSIGN NAME="l.module:api_ver"	VALUE="5.60">
 	<MvASSIGN NAME="l.module:features"	VALUE="util, vis_util, component, data_store, vis_store">
 </MvFUNCTION>
 
 <MvFUNCTION NAME="Module_Install_Store" PARAMETERS="module var" STANDARDOUTPUTLEVEL="" ERROROUTPUTLEVEL="">
-    <MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_Item( 'mvdo',  l.module:code ) }">
+    <MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_Item( 'sql',  l.module:code ) }">
         <MvFUNCTIONRETURN VALUE = 0>
     </MvIF>
 
@@ -50,7 +50,7 @@
 
 <MvFUNCTION NAME="Module_Upgrade_Store" PARAMETERS="module var, version" STANDARDOUTPUTLEVEL="" ERROROUTPUTLEVEL="">
     <MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].Item_Load_Code( 'mvdo', l.null ) }">
-        <MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_Item( 'mvdo',  l.module:code ) }">
+        <MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_Item( 'sql',  l.module:code ) }">
             <MvFUNCTIONRETURN VALUE = 0>
         </MvIF>
     </MvIF>
@@ -122,7 +122,7 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "StoreUtilityModule_LeftNavigation"  PARAMETERS = "module var, indent" STANDARDOUTPUTLEVEL = "">	
-	<MvEVAL EXPR = "{ [ g.Module_Admin ].LeftNavigation_Dot( l.indent - 1, 'Screen=SUTL&Store_Code=' $ encodeattribute( g.Store:code ) $ '&Module_Code=' $ encodeattribute( l.module:code ), 'Main', 'SQL Queries' ) }">
+	<MvEVAL EXPR = "{ [ g.Module_Admin ].LeftNavigation_Dot( l.indent - 1, 'Screen=SUTL&Store_Code=' $ encodeattribute( g.Store:code ) $ '&Module_Code=' $ encodeattribute( l.module:code ), 'Main', 'SQL Query Console' ) }">
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
