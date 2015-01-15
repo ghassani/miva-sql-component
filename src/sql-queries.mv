@@ -23,7 +23,7 @@
 	<MvASSIGN NAME="l.module:name"		VALUE="SQL Queries">
 	<MvASSIGN NAME="l.module:provider"	VALUE="Spliced Media">
 	<MvASSIGN NAME="l.module:author"	VALUE="Gassan Idriss">
-	<MvASSIGN NAME="l.module:version"	VALUE="0.5002">
+	<MvASSIGN NAME="l.module:version"	VALUE="0.5003">
 	<MvASSIGN NAME="l.module:api_ver"	VALUE="5.60">
 	<MvASSIGN NAME="l.module:features"	VALUE="util, vis_util, component, data_store, vis_store">
 </MvFUNCTION>
@@ -63,12 +63,7 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME="ComponentModule_Render_Start" PARAMETERS="module var, item, all_settings var, settings var, param" STANDARDOUTPUTLEVEL="text, html, compresswhitespace">
-
-	<MvASSIGN NAME="l.null" VALUE="Module_Description(l.bar)" />
-
-	<MvIF EXPR="'l.settings' CIN l.param">
-		<MvASSIGN NAME="l.param" VALUE="{ glosub(l.param, 'l.settings', 'l.all_settings') }" />
-	</MvIF>
+	<MvASSIGN NAME="l.param" VALUE="{ glosub(l.param, 'l.settings', 'l.all_settings') }" />
 
 	<MvREFERENCE NAME="l.parameters" VARIABLE="{ l.param }">
 
