@@ -21,7 +21,7 @@
 <MvFUNCTION NAME="Module_Description" PARAMETERS="module var" STANDARDOUTPUTLEVEL="">
 	<MvASSIGN NAME="l.module:code"		VALUE="spliced-sql">
 	<MvASSIGN NAME="l.module:name"		VALUE="SQL Queries">
-	<MvASSIGN NAME="l.module:provider"	VALUE="Spliced Media">
+	<MvASSIGN NAME="l.module:provider"	VALUE="Gassan Idriss">
 	<MvASSIGN NAME="l.module:author"	VALUE="Gassan Idriss">
 	<MvASSIGN NAME="l.module:version"	VALUE="0.5003">
 	<MvASSIGN NAME="l.module:api_ver"	VALUE="5.60">
