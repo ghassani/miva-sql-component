@@ -10,7 +10,7 @@ When you call the component, the param passed to the item must be a literal stri
 a global or local array containing the following members:
 
 - array:query - String - This holds the actual query to be executed. You can use ? for placeholders
-- array:bind_paramters - Array - This should be an array for placeholders set in your query with ?
+- array:bind_parameters - Array - This should be an array for placeholders set in your query with ?
 
 After you execute the query, the same array passed as a parameter gets the following members:
 
@@ -29,7 +29,28 @@ For Example:
   &mvte:row:name;
 </mvt:foreach>
 ```
+
+Download
+-------------------
+Visit the releases page [ https://github.com/ghassani/miva-sql-component/releases ]
+
 SQL Query Console
 -------------------
 
+The SQL Query Console has been moved to its own module. You can download it from the Releases.
+
 When installed into a store, you can now execute any SQL query from the Miva Merchant Admin and display the results. The utility is under the Utilities menu in the admin.
+
+
+
+Change Log
+-------------------
+v0.5000 - Initial Version
+v0.5001 - Bug Fixes
+v0.5002 - Bug Fixes
+v0.5003 - Bug Fixes
+
+v0.6000 - 	Improved error handling
+			Removed UI features, slimmed it down
+			Moved Query Console to its own module
+			Other minor bug fixes

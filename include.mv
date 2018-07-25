@@ -1,0 +1,105 @@
+<MIVA STANDARDOUTPUTLEVEL="" IDENT="$Id$">
+
+<MvCOMMENT>
+    This file is part of Spliced SQL Query Component.
+
+    SQL Query Component is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    SQL Query is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with SQL Query Component.  If not, see <http://www.gnu.org/licenses/>.
+</MvCOMMENT>
+
+<MvFUNCTION NAME = "Execute_Query" PARAMETERS = "parameters var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvIF EXPR="{ NOT len(l.parameters:query) GT 0 }">
+		<MvASSIGN NAME = "l.parameters:error" VALUE="{ g.MvOPENVIEW_Error }">
+		<MvFUNCTIONRETURN VALUE="{ [ g.Module_Library_Utilities ].Error( 'SQL-QUERIES-0002', 'No Query Found Although One Was Expected' ) }">
+	</MvIF>
+
+	<MvCOMMENT>Determine what type of query was passed</MvCOMMENT>
+	<MvASSIGN NAME="l.parameters:query" VALUE="{ trim(l.parameters:query) }" />
+
+	<MvIF EXPR="{ indexofi('SELECT', l.parameters:query, 1) EQ 1 }">		<MvASSIGN NAME="l.parameters:query_type" VALUE="SELECT">
+	<MvELSEIF EXPR="{ indexofi('INSERT', l.parameters:query, 1) EQ 1 }">	<MvASSIGN NAME="l.parameters:query_type" VALUE="INSERT">
+	<MvELSEIF EXPR="{ indexofi('UPDATE', l.parameters:query, 1) EQ 1 }">	<MvASSIGN NAME="l.parameters:query_type" VALUE="UPDATE">
+	<MvELSEIF EXPR="{ indexofi('DELETE', l.parameters:query, 1) EQ 1 }">	<MvASSIGN NAME="l.parameters:query_type" VALUE="DELETE">
+	<MvELSEIF EXPR="{ indexofi('EXPLAIN', l.parameters:query, 1) EQ 1 }">	<MvASSIGN NAME="l.parameters:query_type" VALUE="EXPLAIN">
+	<MvELSEIF EXPR="{ indexofi('DROP', l.parameters:query, 1) EQ 1 }">		<MvASSIGN NAME="l.parameters:query_type" VALUE="DROP">
+	<MvELSEIF EXPR="{ indexofi('CREATE', l.parameters:query, 1) EQ 1 }">	<MvASSIGN NAME="l.parameters:query_type" VALUE="CREATE">
+	<MvELSEIF EXPR="{ indexofi('ALTER', l.parameters:query, 1) EQ 1 }">		<MvASSIGN NAME="l.parameters:query_type" VALUE="ALTER">
+	<MvELSEIF EXPR="{ indexofi('SHOW', l.parameters:query, 1) EQ 1 }">		<MvASSIGN NAME="l.parameters:query_type" VALUE="SHOW">
+
+	<MvELSE>
+		<MvASSIGN NAME="l.parameters:query_type" VALUE="OTHER" />
+	</MvIF>
+
+	<MvCOMMENT>Build Prepared Query Bind Parameters</MvCOMMENT>
+	<MvIF EXPR="{ miva_array_elements(l.parameters:bind_parameters) GT 0 AND miva_array_collapse(l.parameters:bind_parameters) }">
+		<MvFOREACH ITERATOR="l.bind_parameter" ARRAY="l.parameters:bind_parameters" INDEX="l.index">
+			<MvIF EXPR="{ l.index EQ 1 }">
+				<MvASSIGN NAME="l.parameters:bind_parameter_list" VALUE="{ 'l.parameters:bind_parameters[' $ l.index $ ']' }" />
+			<MvELSE>
+				<MvASSIGN NAME="l.parameters:bind_parameter_list" VALUE="{ l.parameters:bind_parameter_list $ ', l.parameters:bind_parameters[' $ l.index $ ']' }" />
+			</MvIF>
+		</MvFOREACH>		
+	</MvIF>
+
+	<MvCOMMENT>If the passed parameter structure contains a result set, lets clear it out before loading the new one</MvCOMMENT>
+	<MvIF EXPR="{ miva_array_elements(l.parameters:results) }">
+		<MvASSIGN NAME="l.null" VALUE="{ miva_array_clear(l.parameters:results, 1, miva_array_elements(l.parameters:results)) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.parameters:error" VALUE = "">
+
+	<MvCOMMENT>Execute the Query</MvCOMMENT>
+	<MvIF EXPR="{ l.parameters:query_type EQ 'SELECT' OR l.parameters:query_type EQ 'EXPLAIN' OR l.parameters:query_type EQ 'SHOW' }">
+		<MvOPENVIEW NAME= "Merchant" VIEW="SQL" QUERY="{ l.parameters:query }" FIELDS= "{ l.parameters:bind_parameter_list }">
+
+			<MvIF EXPR="{ g.MvOPENVIEW_Error }">
+				<MvASSIGN NAME = "l.parameters:error" VALUE="{ g.MvOPENVIEW_Error }">
+				<MvFUNCTIONRETURN VALUE="{ [ g.Module_Library_Utilities ].Error( 'SQL-QUERIES-00002', g.MvOPENVIEW_Error ) }">
+			</MvIF>
+
+			
+			<MvCOMMENT>Determine what fields we have from this query result set to build the result array</MvCOMMENT>
+			<MvREVEALSTRUCTURE NAME="MERCHANT" VIEW="SQL" VARIABLE="l.fields">
+
+			<MvCOMMENT>Build an array of the result sets in the data structure passed to this function</MvCOMMENT>
+			<MvASSIGN NAME="l.index" VALUE="1">
+			<MvWHILE EXPR="{ NOT SQL.d.EOF }">
+				<MvFOREACH ITERATOR="l.field" ARRAY="l.fields" INDEX="l.field_index">
+					<MvASSIGN NAME="l.parameters:results" INDEX="{ l.index }" MEMBER="{ l.field:field_name }" VALUE="{ miva_variable_value('SQL.d.' $ l.field:field_name) }">
+				</MvFOREACH>
+
+				<MvASSIGN NAME="l.index" VALUE="{ l.index +1 }">
+				<MvSKIP NAME="Merchant" VIEW="SQL" ROWS=1>
+			</MvWHILE>
+
+			<MvASSIGN NAME="l.parameters:fields" VALUE="{ l.fields }" />
+			
+		<MvCLOSEVIEW NAME="Merchant" VIEW="SQL">
+	<MvELSE>
+		<MvTRANSACT NAME="Merchant">
+			<MvQUERY NAME="Merchant" QUERY="{ l.parameters:query }" FIELDS= "{ l.parameters:bind_parameter_list }">
+
+			<MvIF EXPR="{ g.MvQUERY_Error }">
+				<MvROLLBACK NAME="Merchant">
+
+				<MvASSIGN NAME = "l.parameters:error" VALUE="{ g.MvQUERY_Error }">
+
+				<MvFUNCTIONRETURN VALUE="{ [ g.Module_Library_Utilities ].Error( 'SQL-QUERIES-00003', g.MvQUERY_Error ) }">				
+			</MvIF>
+
+			<MvASSIGN NAME="l.parameters:results" VALUE=1>
+		<MvCOMMIT NAME="Merchant">
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>

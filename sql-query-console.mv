@@ -1,0 +1,258 @@
+<MIVA STANDARDOUTPUTLEVEL="" IDENT="$Id$">
+
+<MvCOMMENT>
+    This file is part of Spliced SQL Query Component.
+
+    SQL Query Component is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    SQL Query is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with SQL Query Component.  If not, see <http://www.gnu.org/licenses/>.
+</MvCOMMENT>
+
+<MvFUNCTION NAME="Module_Description" PARAMETERS="module var" STANDARDOUTPUTLEVEL="">
+	<MvASSIGN NAME="l.module:code"			VALUE="spliced-sql-query-console">
+	<MvASSIGN NAME="l.module:name"			VALUE="SQL Query Console">
+	<MvASSIGN NAME="l.module:description"	VALUE="SQL Query Console allows you to execute SQL from the admin interface.">
+	<MvASSIGN NAME="l.module:provider"		VALUE="Gassan Idriss">
+	<MvASSIGN NAME="l.module:author"		VALUE="Gassan Idriss">
+	<MvASSIGN NAME="l.module:version"		VALUE="0.6000">
+	<MvASSIGN NAME="l.module:api_ver"		VALUE="5.60">
+	<MvASSIGN NAME="l.module:features"		VALUE="util, vis_util, data_store">
+</MvFUNCTION>
+
+<MvCOMMENT>
+|
+| Store-level Module Data Support Feature (data_store)
+|
+</MvCOMMENT>
+
+<MvFUNCTION NAME="Module_Install_Store" PARAMETERS="module var" STANDARDOUTPUTLEVEL="" ERROROUTPUTLEVEL="">
+    <MvFUNCTIONRETURN VALUE=1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME="Module_Uninstall_Store" PARAMETERS="module var" STANDARDOUTPUTLEVEL="" ERROROUTPUTLEVEL="">
+	<MvFUNCTIONRETURN VALUE=1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME="Module_Upgrade_Store" PARAMETERS="module var, version" STANDARDOUTPUTLEVEL="" ERROROUTPUTLEVEL="">
+    <MvFUNCTIONRETURN VALUE=1>
+</MvFUNCTION>
+
+<MvCOMMENT>
+|
+| Utility Screen Feature (vis_util)
+|
+</MvCOMMENT>
+
+<MvFUNCTION NAME="Module_Utility_Tabs" PARAMETERS="module var" STANDARDOUTPUTLEVEL="">
+	<MvFUNCTIONRETURN VALUE="{ l.module:code $ ':SQL Query Console' }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME="Module_Utility_Validate" PARAMETERS="module var" STANDARDOUTPUTLEVEL="text, html, compresswhitespace">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME="Module_Utility_Update" PARAMETERS="module var" STANDARDOUTPUTLEVEL="text, html, compresswhitespace">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME="Module_Utility_Content" PARAMETERS="module var, tab, load_fields" STANDARDOUTPUTLEVEL="text, html, compresswhitespace">
+	<MvIF EXPR = "{ l.tab NE l.module:code }">
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+
+	<style>
+		.sm-notice 
+		{
+			padding: 10px; 
+			color: white; 
+			background: #2ebbcd;
+			font-weight:bold;
+		}
+		.sm-error 
+		{
+			padding: 10px; 
+			color: white; 
+			background: red;
+			font-weight:bold;
+		}
+		.sm-query-input
+		{
+			width: 100%;
+		}
+
+		.sm-bttn-execute
+		{
+			font-size: 14px;
+			padding: 4px;
+		}
+
+		.sm-query-console code
+		{
+			background: #c1c1c1;
+			margin-left: 20px;
+			margin-right: 20px;
+			padding: 10px;
+		}
+
+		.sm-query-result-table td,
+		sm-query-result-table th
+		{
+			padding: 3px;
+		}
+
+		.sm-query-result-table tbody tr:nth-child(even)
+		{
+			background-color: #f2f2f2;
+		}
+		
+	</style>
+
+	<div class="sm-query-console">
+		<div class="sm-notice">This utility can break your store if you do not know what you are doing.</div>
+		
+		<div class="page-title">
+			<h2>Query</h2>
+		</div>
+
+		<div>
+			<input type="hidden" name="query" value="" id="query-exec" />
+			<textarea name="query_input" rows="4" id="query-statement" class="sm-query-input" placeholder="Supported Query Types: SELECT, INSERT, UPDATE, DELETE, EXPLAIN, SHOW, ALTER, DROP"></textarea>
+			<br />
+			<input type="button" class="sm-bttn-execute" value="Execute" onclick="submitQuery();">
+		</div>
+
+		<script>
+			function submitQuery()
+			{
+				var query_input = document.getElementById( 'query-statement' );
+				var query_exec  = document.getElementById( 'query-exec' );
+				var query 		= query_input.value.toUpperCase();
+
+				if ( !query.length )
+				{
+					query_input.focus();
+					return;
+				}
+
+				if( query.indexOf( 'SELECT' ) > -1 || query.indexOf( 'EXPLAIN' ) > -1 || query.indexOf( 'SHOW' ) > -1 )
+				{
+					query_exec.value = query;
+					document.SMOD.submit();
+				}
+				else if ( confirm( "Are you sure?") )
+				{
+					query_exec.value = query;
+					document.SMOD.submit();
+				}
+			}
+		</script>
+
+		<MvIF EXPR = "{ NOT ISNULL g.query }">
+			<MvASSIGN NAME = "l.parameters:query" 	VALUE = "{ g.query }" />	
+			<MvASSIGN NAME = "l.result" 			VALUE = "{ Execute_Query( l.parameters ) }" />
+
+			<hr />
+			<div class="page-title">
+				<h2>Query Results <small><MvEVAL EXPR = "{ l.parameters:query_type }" /> QUERY</small></h2>
+			</div>
+
+			<p><code><MvEVAL EXPR = "{ encodeentities( l.parameters:query ) }"></code></p>
+
+			<MvIF EXPR = "{ l.parameters:query_type EQ 'SELECT' OR l.parameters:query_type EQ 'EXPLAIN' OR l.parameters:query_type EQ 'SHOW' }">
+				<table width="100%" class="sm-query-result-table">
+					<thead>
+						<tr>
+							<MvFOREACH ITERATOR = "l.field" ARRAY = "l.parameters:fields" INDEX = "l.index">
+								<th><MvEVAL EXPR = "{ l.field:field_name }" /> [<MvEVAL EXPR = "{ encodeentities( l.field:field_type ) }" />(<MvEVAL EXPR = "{ encodeentities( l.field:field_len ) }" />)]</th>
+							</MvFOREACH>
+						</tr>
+					</thead>
+					<tbody>
+						<MvIF EXPR = "{ NOT ISNULL l.parameters:error }">
+							<tr class="danger">
+								<td colspan="{ miva_array_elements( l.parameters:fields ) }" class="text-center"><strong><MvEVAL EXPR = "{ encodeentities( l.parameters:error ) }" /></strong></td>
+							</tr>
+						<MvELSEIF EXPR = "{ miva_array_elements( l.parameters:results ) EQ 0 }">
+							<tr class="info">
+								<td colspan="{ miva_array_elements( l.parameters:fields ) }" class="text-center"><strong>No Results Returned</strong></td>
+							</tr>
+						</MvIF>
+						<MvFOREACH ITERATOR = "l.result" ARRAY = "l.parameters:results" INDEX = "l.row_index">
+							<tr>
+								<MvFOREACH ITERATOR = "l.field" ARRAY = "l.parameters:fields" INDEX = "l.index">
+									<td><MvEVAL EXPR = "{ encodeentities( miva_variable_value( 'l.parameters:results[' $ l.row_index $ ']:' $ l.field:field_name ) ) }" /></td>
+								</MvFOREACH>
+							</tr>
+						</MvFOREACH>
+					</tbody>
+				</table>	
+			<MvELSE>
+				<table width="100%" class="sm-query-result-table">
+					<tbody>
+						<tr>
+							<td class="text-center">
+								<MvIF EXPR = "{ NOT l.result }">
+									<div class="sm-error">Query Error: <MvEVAL EXPR = "{ encodeentities( l.parameters:error ) }"></div>
+								<MvELSE>
+									<strong>No Result Set For Query Type. If you do not see an error, everything went ok.</strong>
+								</MvIF>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</MvIF>
+		</MvIF>
+
+		<hr />
+
+		<p>Version <MvEVAL EXPR = "{ encodeentities( l.module:version ) }"> - &copy; 2014 - <MvEVAL EXPR = "{ time_t_year( s.dyn_time_t, 'local' ) }"> <a href="https://github.com/ghassani" target="_blank">Gassan Idriss</a></p>
+
+		<p>SQL Query Console is free software: you can redistribute it and/or modify <br />
+			it under the terms of the GNU General Public License as published by <br />
+			the Free Software Foundation, either version 3 of the License, or <br />
+			(at your option) any later version.<br />
+			<br />
+			You should have received a copy of the GNU General Public License
+			along with SQL Query Component. <br />
+			If not, see <<a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>>.<br />
+			<br />
+			For source code go to the <a href="https://github.com/ghassani/miva-sql-component" target="_blank">GitHub repository</a> and for releases visit the <a href="https://github.com/ghassani/miva-sql-component/releases">repository releases page</a>
+		</p>
+
+	</div>
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvCOMMENT>
+|
+| Store Utilities Feature (util)
+|
+</MvCOMMENT>
+
+<MvFUNCTION NAME = "StoreUtilityModule_LeftNavigation"  PARAMETERS = "module var, indent" STANDARDOUTPUTLEVEL = "">	
+	<MvEVAL EXPR = "{ [ g.Module_Admin ].LeftNavigation_Dot( l.indent - 1, 'Screen=SUTL&Store_Code=' $ encodeattribute( g.Store:code ) $ '&Module_Code=' $ encodeattribute( l.module:code ), 'Main', 'SQL Query Console' ) }">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "StoreUtilityModule_Validate" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "StoreUtilityModule_Action" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "StoreUtilityModule_Screen" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvINCLUDE FILE = "include.mv">

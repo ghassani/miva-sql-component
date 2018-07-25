@@ -1,0 +1,191 @@
+<MIVA STANDARDOUTPUTLEVEL="" IDENT="$Id$">
+
+<MvCOMMENT>
+    This file is part of Spliced SQL Query Component.
+
+    SQL Query Component is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    SQL Query is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with SQL Query Component.  If not, see <http://www.gnu.org/licenses/>.
+</MvCOMMENT>
+
+<MvFUNCTION NAME="Module_Description" PARAMETERS="module var" STANDARDOUTPUTLEVEL="">
+	<MvASSIGN NAME="l.module:code"		VALUE="spliced-sql">
+	<MvASSIGN NAME="l.module:name"		VALUE="SQL Queries">
+	<MvASSIGN NAME="l.module:provider"	VALUE="Gassan Idriss">
+	<MvASSIGN NAME="l.module:author"	VALUE="Gassan Idriss">
+	<MvASSIGN NAME="l.module:version"	VALUE="0.6000">
+	<MvASSIGN NAME="l.module:api_ver"	VALUE="5.60">
+	<MvASSIGN NAME="l.module:features"	VALUE="util, component, data_store">
+</MvFUNCTION>
+
+<MvCOMMENT>
+|
+| Store-level Module Data Support Feature (data_store)
+|
+</MvCOMMENT>
+
+<MvFUNCTION NAME = "Module_Install_Store" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+    <MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_Item( 'sql',  l.module:code ) }">
+        <MvFUNCTIONRETURN VALUE = 0>
+    </MvIF>
+
+    <MvFUNCTIONRETURN VALUE=1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Module_Uninstall_Store" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Module_Upgrade_Store" PARAMETERS = "module var, version" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+    <MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].Item_Load_Code( 'sql', l.null ) }">
+        <MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_Item( 'sql',  l.module:code ) }">
+            <MvFUNCTIONRETURN VALUE = 0>
+        </MvIF>
+    </MvIF>
+
+    <MvFUNCTIONRETURN VALUE=1>
+</MvFUNCTION>
+
+<MvCOMMENT>
+|
+| Store Utilities Feature (util)
+|
+</MvCOMMENT>
+
+<MvFUNCTION NAME = "StoreUtilityModule_Action" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "StoreUtilityModule_LeftNavigation" PARAMETERS = "module var, indent" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "StoreUtilityModule_Screen" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "StoreUtilityModule_Validate" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "StoreUtilityModule_Action_Privileges" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = -1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "StoreUtilityModule_Screen_Privileges" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = -1>
+</MvFUNCTION>
+
+<MvCOMMENT>
+|
+| Component Feature (component)
+|
+</MvCOMMENT>
+
+<MvFUNCTION NAME = "ComponentModule_Tabs" PARAMETERS = "module var, item, settings var" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE="{ l.module:code $ ':SQL Query Component' }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "ComponentModule_Validate" PARAMETERS = "module var, item, field_prefix, fields var" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "ComponentModule_Update" PARAMETERS = "module var, item, field_prefix, fields var, settings var" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "ComponentModule_Content" PARAMETERS = "module var, item, tab, load_fields, field_prefix, fields var, settings var" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
+	<MvIF EXPR = "{ l.tab NE l.module:code }">
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+	
+	<div class="spliced-sql-about-wrapper">
+		<h1>SQL Query Component</h1>
+
+		<p>This utility component allows you to execute SQL queries from Miva Script Templates.</p>
+
+		<p>You will also need to assign it to any page you wish to use its functionality on.</p>
+
+		<p>When you call the component, the param passed to the item must be a literal string to
+		a global or local array containing the following members:</p>
+
+		
+		<div><code>- array:query - String - This holds the actual query to be executed. You can use ? for placeholders</code></div>
+		<div><code>- array:bind_paramters - Array - This should be an array for placeholders set in your query with ?</code></div>
+
+
+		<p>After you execute the query, the same array passed as a parameter gets the following members:</p>
+
+		<div><code>- array:results - Int|Array - This will be populated with rows from SELECT or EXPLAIN, or INT from UPDATE, INSERT, DELETE, etc</code></div>
+		<div><code>- array:fields - Array|null - This will be populated with an array of fields from SELECT or EXPLAIN, or NULL from UPDATE, INSERT, DELETE, etc</code></div>
+		<div><code>- array:query_type - String - This will be populated with the type of query being executed (SELECT, EXPLAIN, etc)</code></div>
+
+		<p>For Example:</p>
+
+		<div><code>&#x3C;mvt:assign name=&#x22;l.settings:query:query&#x22; value=&#x22;&#x27;SELECT * FROM s01_Products WHERE code = ?&#x27;&#x22; /&#x3E;</code></div>
+		<div><code>&#x3C;mvt:assign name=&#x22;l.settings:query:bind_parameters[1]&#x22; value=&#x22;&#x27;bar&#x27;&#x22; /&#x3E;</code></div>
+		<div><code>&#x3C;mvt:item name=&#x22;sql&#x22; param=&#x22;l.settings:query&#x22; /&#x3E;</code></div>
+		<div><code>&nbsp;</code></div>
+		<div><code>&#x3C;mvt:foreach iterator=&#x22;row&#x22; array=&#x22;query:results&#x22;&#x3E;</code></div>
+		<div><code>&nbsp;&nbsp;&#x26;mvte:row:name;</code></div>
+		<div><code>&#x3C;/mvt:foreach&#x3E;</code></div>
+	</div>
+
+	<hr />
+
+	<p>&copy; 2014 - <MvEVAL EXPR = "{ time_t_year( s.dyn_time_t, 'local' ) }"> <a href="https://github.com/ghassani" target="_blank">Gassan Idriss</a></p>
+
+	<p>SQL Query Component is free software: you can redistribute it and/or modify <br />
+		it under the terms of the GNU General Public License as published by <br />
+		the Free Software Foundation, either version 3 of the License, or <br />
+		(at your option) any later version.<br />
+		<br />
+		You should have received a copy of the GNU General Public License
+		along with SQL Query Component. <br />
+		If not, see <<a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>>.<br />
+		<br />
+		For source code go to the <a href="https://github.com/ghassani/miva-sql-component" target="_blank">GitHub repository</a> and for releases visit the <a href="https://github.com/ghassani/miva-sql-component/releases">repository releases page</a>
+	</p>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "ComponentModule_Defaults" PARAMETERS = "module var, settings var" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "ComponentModule_Initialize" PARAMETERS = "module var, item, all_settings var, settings var" STANDARDOUTPUTLEVEL = "">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "ComponentModule_Page_Assign" PARAMETERS = "module var, page var, item, settings var" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "ComponentModule_Page_Unassign" PARAMETERS = "module var, page var, item, settings var" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "ComponentModule_Prerender" PARAMETERS = "module var, item, all_settings var, settings var, param" STANDARDOUTPUTLEVEL = "">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "ComponentModule_Render_Start" PARAMETERS = "module var, item, all_settings var, settings var, param" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
+	<MvASSIGN NAME="l.param" VALUE="{ glosub(l.param, 'l.settings', 'l.all_settings') }" />
+
+	<MvREFERENCE NAME="l.parameters" VARIABLE="{ l.param }">
+
+	<MvFUNCTIONRETURN VALUE = "{ Execute_Query(l.parameters) }" />	
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "ComponentModule_Render_End" PARAMETERS = "module var, item, all_settings var, settings var, param" STANDARDOUTPUTLEVEL = "">
+</MvFUNCTION>
+
+<MvINCLUDE FILE = "include.mv">
