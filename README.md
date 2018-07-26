@@ -45,15 +45,16 @@ When installed into a store, you can now execute any SQL query from the Miva Mer
 
 Change Log
 -------------------
-v0.5000 - Initial Version
+- v0.5000 - Initial Version
+- v0.5001 - Bug Fixes
+- v0.5002 - Bug Fixes
+- v0.5003 - Bug Fixes
+- v0.6000 - Fixes:
+		
+		Improved error handling
 
-v0.5001 - Bug Fixes
-
-v0.5002 - Bug Fixes
-
-v0.5003 - Bug Fixes
-
-v0.6000 - 	Improved error handling
-			Removed UI features, slimmed it down
-			Moved Query Console to its own module
-			Other minor bug fixes
+		Removed UI features, slimmed it down
+		
+		Moved Query Console to its own module
+		
+		Other minor bug fixes
