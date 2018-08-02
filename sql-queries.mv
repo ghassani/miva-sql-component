@@ -22,7 +22,7 @@
 	<MvASSIGN NAME="l.module:name"		VALUE="SQL Queries">
 	<MvASSIGN NAME="l.module:provider"	VALUE="Gassan Idriss">
 	<MvASSIGN NAME="l.module:author"	VALUE="Gassan Idriss">
-	<MvASSIGN NAME="l.module:version"	VALUE="0.6000">
+	<MvASSIGN NAME="l.module:version"	VALUE="0.6001">
 	<MvASSIGN NAME="l.module:api_ver"	VALUE="5.60">
 	<MvASSIGN NAME="l.module:features"	VALUE="util, component, data_store">
 </MvFUNCTION>

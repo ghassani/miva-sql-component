@@ -23,7 +23,7 @@
 	<MvASSIGN NAME="l.module:description"	VALUE="SQL Query Console allows you to execute SQL from the admin interface.">
 	<MvASSIGN NAME="l.module:provider"		VALUE="Gassan Idriss">
 	<MvASSIGN NAME="l.module:author"		VALUE="Gassan Idriss">
-	<MvASSIGN NAME="l.module:version"		VALUE="0.6000">
+	<MvASSIGN NAME="l.module:version"		VALUE="0.6001">
 	<MvASSIGN NAME="l.module:api_ver"		VALUE="5.60">
 	<MvASSIGN NAME="l.module:features"		VALUE="util, vis_util, data_store">
 </MvFUNCTION>
@@ -145,12 +145,12 @@
 
 				if( query.indexOf( 'SELECT' ) > -1 || query.indexOf( 'EXPLAIN' ) > -1 || query.indexOf( 'SHOW' ) > -1 )
 				{
-					query_exec.value = query;
+					query_exec.value = query_input.value;
 					document.SMOD.submit();
 				}
 				else if ( confirm( "Are you sure?") )
 				{
-					query_exec.value = query;
+					query_exec.value = query_input.value;
 					document.SMOD.submit();
 				}
 			}
@@ -239,7 +239,6 @@
 </MvCOMMENT>
 
 <MvFUNCTION NAME = "StoreUtilityModule_LeftNavigation"  PARAMETERS = "module var, indent" STANDARDOUTPUTLEVEL = "">	
-	<MvEVAL EXPR = "{ [ g.Module_Admin ].LeftNavigation_Dot( l.indent - 1, 'Screen=SUTL&Store_Code=' $ encodeattribute( g.Store:code ) $ '&Module_Code=' $ encodeattribute( l.module:code ), 'Main', 'SQL Query Console' ) }">
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
