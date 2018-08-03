@@ -58,4 +58,4 @@ Change Log
 		Moved Query Console to its own module
 		
 		Other minor bug fixes
-- v0.6000 - Fixed query console uppercasing query
+- v0.6001 - Fixed query console uppercasing query
